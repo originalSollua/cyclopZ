@@ -113,7 +113,7 @@ class cyclopz:
         #draw arm back through pile
         i = 1025
         j = 1500
-        while not test_image()=="INVALID" and i <= 2000 and j <= 2500:
+        while not testImage()=="Invalid" and i <= 2000 and j <= 2500:
             self.usb.write("#1 P"+str(i+7)+" S100 \r")
             self.usb.write("#2 P"+str(j+26)+" S125 \r")
             time.sleep(1)
@@ -134,13 +134,13 @@ class cyclopz:
         self.count=self.count+20
         time.sleep(4)
     def grab(self,incolor):
-        if incolor=="red":
+        if incolor=="Red":
             self.move_to_red()
             self.usb.write("#4 P"+str(self.k_default_hand)+"  S"+str(self.k_default_speed)+" \r")
-        elif incolor=="pink":
+        elif incolor=="Pink":
             self.move_to_pink()
             self.usb.write("#4 P"+str(self.k_default_hand)+"  S"+str(self.k_default_speed)+" \r")
-        elif incolor=="yellow":
+        elif incolor=="Yellow":
             self.move_to_yellow()
             self.usb.write("#4 P"+str(self.k_default_hand)+"  S"+str(self.k_default_speed)+" \r")
         else:
