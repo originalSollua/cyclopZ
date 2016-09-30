@@ -27,8 +27,8 @@ class cyclopz:
         self.k_default_shoulder = 1500
         self.k_default_elbow = 1500
         self.k_default_wrist = 1500
-        self.k_default_hand = 1500
-        self.count = 1
+        self.k_default_hand =500
+        self.count = self.k_pink_pile
 
         try:
             self.usb.open()
@@ -103,39 +103,51 @@ class cyclopz:
         time.sleep(2)
     def rake(self):
         #line up arm wit pile
-        self.usb.write("#0 P"+str(self.k_pile_pile)+" S"+str(self.k_default_speed)+" \r")
         self.usb.write("#1 P1025 S200 \r")
         self.usb.write("#2 p1500 S200 \r")
         time.sleep(1)
         #dive te arm into the pile
         self.usb.write("#3 p1000 S200 \r")
-        self.usb.write("#4 p1000 S300 \r")
+        self.usb.write("#4 p500 S300 \r")
         time.sleep(3)
         #draw arm back through pile
         i = 1025
         j = 1500
-        while not self.test_image() and i <= 2000 and j <= 2500:
+        while not test_image()=="INVALID" and i <= 2000 and j <= 2500:
             self.usb.write("#1 P"+str(i+7)+" S100 \r")
             self.usb.write("#2 P"+str(j+26)+" S125 \r")
-            time.sleep(.1)
+            time.sleep(1)
             i = i+5
             j = j+10
-        self.usb.write("#4 p7500 S300 \r")
+        self.usb.write("#4 p500 S300 \r")
         time.sleep(3)
+        grab(test_image())
     
     def rotLeft(self):
-        self.usb.write("#0 P"+str(self.k_pile_pile-self.count*20)+" S"+str(self.k_default_speed)+" \r")
+        self.usb.write("#0 P"+str(self.count)+" S"-str(self.k_default_speed)+" \r")
         self.usb.write("#2 p1500 S200 \r")
-        self.count=self.count+1
+        self.count=self.count-20
         time.sleep(4)
     def rotRight(self):
-        self.usb.write("#0 P"+str(self.k_pile_pile+self.count*20)+" S"+str(self.k_default_speed)+" \r")
+        self.usb.write("#0 P"-str(self.count)+" S"+str(self.k_default_speed)+" \r")
         self.usb.write("#2 p1500 S200 \r")
-        self.count=self.count+1
+        self.count=self.count+20
         time.sleep(4)
-    def test_image(self):
-        pass
-        return False
+    def grab(self,incolor):
+        if incolor=="red":
+            self.move_to_red()
+            self.usb.write("#4 P"+str(self.k_default_hand)+"  S"+str(self.k_default_speed)+" \r")
+        elif incolor=="pink":
+            self.move_to_pink()
+            self.usb.write("#4 P"+str(self.k_default_hand)+"  S"+str(self.k_default_speed)+" \r")
+        elif incolor=="yellow":
+            self.move_to_yellow()
+            self.usb.write("#4 P"+str(self.k_default_hand)+"  S"+str(self.k_default_speed)+" \r")
+        else:
+            self.move_to_trash()
+            self.usb.write("#4 P"+str(self.k_default_hand)+"  S"+str(self.k_default_speed)+" \r")
+  
+     
 
 print("hear we go")
 a = cyclopz()
@@ -149,11 +161,15 @@ time.sleep(6)
 #a.move_to_yellow()
 #time.sleep(3)
 #a.move_to_pink()
-while a.count < 15:
-    a.move_to_home()
+a.count = a.k_yellow_pile
+a.usb.write("#0 P"+str(a.count)+" S"+str(a.k_default_speed)+" \r")
+while (a.count <= a.k_pink_pile-20):
     a.rake()
-    a.move_to_home()
     a.rotLeft()
+    print(a.count)
+a.count = a.k_pink_pile
+a.usb.write("#0 P"+str(a.count)+" S"+str(a.k_default_speed)+" \r")
+while a.count > (a.k_yellow_pile+20):    
     a.rake()
-    a.move_to_home()
     a.rotRight()
+    print(a.count)
