@@ -1,15 +1,15 @@
-"""
-Import these things in mainline:
+
+#Import these things in mainline:
 
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
 import cv2
 import numpy as np
-"""
 
+
+camera=PiCamera()
 def testImage():
- camera=PiCamera()
  rawCapture=PiRGBArray(camera)
 
  time.sleep(0.1)
@@ -32,8 +32,8 @@ def testImage():
 
  ave=np.array((int(ave[0]),int(ave[1]),int(ave[2])))
  cv2.circle(image,(md1,md2),30,ave,-11)
- cv2.imshow("Image",image)
- cv2.waitKey(0)
+# cv2.imshow("Image",image)
+# cv2.waitKey(0)
  
  min_yellow = [30,110,140]
  max_yellow = [100,160,190]

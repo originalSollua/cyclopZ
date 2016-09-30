@@ -2,10 +2,14 @@
 # call to initialize variable and imports
 import serial
 import time
-from cv2.cv import *
-#import picamera
-#import picamera.array
+import cv2 
+from picamera import PiCamera
+from picamera.array import PiRGBArray
+import picamera.array
 import testImage
+import numpy as np
+#global camera
+#camera=PiCamera()
 class cyclopz:
     def __init__(self):
         self.usb = serial.Serial(
@@ -28,7 +32,7 @@ class cyclopz:
         self.k_default_shoulder = 1500
         self.k_default_elbow = 1500
         self.k_default_wrist = 1500
-        self.k_default_hand =500
+        self.k_default_hand =700
         self.count = self.k_pink_pile
 
         try:
@@ -109,23 +113,23 @@ class cyclopz:
         time.sleep(1)
         #dive te arm into the pile
         self.usb.write("#3 p1000 S200 \r")
-        self.usb.write("#4 p500 S300 \r")
+        self.usb.write("#4 p700 S300 \r")
         time.sleep(3)
         #draw arm back through pile
         i = 1025
         j = 1500
-        while not testImage.testImage()=="Invalid" and i <= 2000 and j <= 2500:
-            self.usb.write("#1 P"+str(i+7)+" S100 \r")
+        while (testImage.testImage()=="Invalid") and i <= 2000 and j <= 2500:
+            self.usb.write("#1 P"+str(i+10)+" S100 \r")
             self.usb.write("#2 P"+str(j+26)+" S125 \r")
-            time.sleep(1)
+            time.sleep(.1)
             i = i+5
             j = j+10
         self.usb.write("#4 p500 S300 \r")
         time.sleep(3)
-        grab(test_image())
+        self.grab(testImage.testImage())
     
     def rotLeft(self):
-        self.usb.write("#0 P"+str(self.count)+" S"-str(self.k_default_speed)+" \r")
+        self.usb.write("#0 P"+str(self.count)+" S"+str(self.k_default_speed)+" \r")
         self.usb.write("#2 p1500 S200 \r")
         self.count=self.count-20
         time.sleep(4)
@@ -137,17 +141,21 @@ class cyclopz:
     def grab(self,incolor):
         if incolor=="Red":
             self.move_to_red()
+	    time.sleep(3)
             self.usb.write("#4 P"+str(self.k_default_hand)+"  S"+str(self.k_default_speed)+" \r")
         elif incolor=="Pink":
             self.move_to_pink()
+	    time.sleep(3)
             self.usb.write("#4 P"+str(self.k_default_hand)+"  S"+str(self.k_default_speed)+" \r")
         elif incolor=="Yellow":
             self.move_to_yellow()
+	    time.sleep(3)
             self.usb.write("#4 P"+str(self.k_default_hand)+"  S"+str(self.k_default_speed)+" \r")
         else:
             self.move_to_trash()
+	    time.sleep(3)
             self.usb.write("#4 P"+str(self.k_default_hand)+"  S"+str(self.k_default_speed)+" \r")
-  
+ 	self.move_to_home() 
      
 
 print("hear we go")
