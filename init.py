@@ -5,6 +5,7 @@ import time
 from cv2.cv import *
 #import picamera
 #import picamera.array
+import testImage
 class cyclopz:
     def __init__(self):
         self.usb = serial.Serial(
@@ -113,7 +114,7 @@ class cyclopz:
         #draw arm back through pile
         i = 1025
         j = 1500
-        while not testImage()=="Invalid" and i <= 2000 and j <= 2500:
+        while not testImage.testImage()=="Invalid" and i <= 2000 and j <= 2500:
             self.usb.write("#1 P"+str(i+7)+" S100 \r")
             self.usb.write("#2 P"+str(j+26)+" S125 \r")
             time.sleep(1)
