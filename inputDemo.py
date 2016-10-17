@@ -1,6 +1,11 @@
 from reader import SixAxis
 import time
 from keydrive import cyclopzkeys
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+import cv2
+import numpy as np
+
 controler = SixAxis(dead_zone = 0.0, hot_zone = 0.00, connect=True)
 exit = False
 def handler(button):
@@ -11,17 +16,27 @@ prevx = 0
 prevy = 0
 controler.register_button_handler(handler, SixAxis.button_circle)
 controler.register_button_handler(handler_exit, SixAxis.button_ps)
+camera = PiCamera()
+
 c = cyclopzkeys()
 current_milli_time = lambda: int(round(time.time()*10))
 last_time = current_milli_time()
 
 while controler.is_connected():
     #controler.handle_event()
+    rawCapture=PiRGBArray(camera)
+    time.sleep(0.1)
+    camera.capture(rawCapture,format='bgr')
+    image=rawCapture.array
+    edges = cv2.Canny(image,0,100,3)
+    cv2.imshow("Image",edges)
+    cv2.waitKey(1)
+
     x = controler.axes[0].corrected_value()
     y = controler.axes[1].corrected_value()
     c.inc_base_rotation(10*x)
     c.inc_shoulder_angle(10*y)
-     
+    
     x = controler.axes[2].corrected_value()
     y = controler.axes[3].corrected_value()
     c.inc_elbow_angle(10*x)
