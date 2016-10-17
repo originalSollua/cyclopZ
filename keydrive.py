@@ -20,7 +20,7 @@ class cyclopzkeys:
                 dsrdtr=False
                 )
 
-        self.k_default_speed = 1500
+        self.k_default_speed = 750
         self.k_default_shoulder = 1500
         self.k_default_elbow = 1500
         self.k_default_wrist = 1500
@@ -73,7 +73,12 @@ class cyclopzkeys:
         #adjust these valuse to stop popping the camera off the pi
         if self.threerot < 0:
             self.threerot = 0
-        if self.threerot > 2500:
-            self.threerot = 2500
+        if self.threerot > 1750:
+            self.threerot = 1750
         self.usb.write("#3 P"+str(self.threerot)+" S"+str(self.k_default_speed)+" \r")
+    def open(self):
+        self.usb.write("#4 P500 S"+str(self.k_default_speed)+" \r")
+    def close(self):
+        self.usb.write("#4 P2000 S"+str(self.k_default_speed)+" \r")
+	
 

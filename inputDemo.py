@@ -6,6 +6,7 @@ from picamera import PiCamera
 import cv2
 import numpy as np
 import threading
+import sys
 
 class ImageThread(object):
     def __init__(self,interval=1):
@@ -28,20 +29,26 @@ class ImageThread(object):
 
 controler = SixAxis(dead_zone = 0.0, hot_zone = 0.00, connect=True)
 exit = False
-def handler(button):
-    print 'Button!!!! {}'.format(button)
+c = cyclopzkeys()
+def handler_close(button):
+    c.close()
 def handler_exit(button):
-    controler.disconect()
+    quit()
+    
+def handler_open(button):
+    c.open()
+def quit():
+    exit = True
 prevx = 0
 prevy = 0
-controler.register_button_handler(handler, SixAxis.button_circle)
+controler.register_button_handler(handler_close, SixAxis.button_circle)
+controler.register_button_handler(handler_open, SixAxis.button_square)
 controler.register_button_handler(handler_exit, SixAxis.button_ps)
 viewer = ImageThread()
-c = cyclopzkeys()
 current_milli_time = lambda: int(round(time.time()*10))
 last_time = current_milli_time()
 
-while controler.is_connected():
+while not exit:
     #controler.handle_event()
 
     x = controler.axes[0].corrected_value()
