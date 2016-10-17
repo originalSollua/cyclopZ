@@ -38,7 +38,8 @@ def handler_exit(button):
 def handler_open(button):
     c.open()
 def quit():
-   global exit = True
+    global exit
+    exit = True
 prevx = 0
 prevy = 0
 controler.register_button_handler(handler_close, SixAxis.button_circle)
