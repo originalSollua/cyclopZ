@@ -5,6 +5,26 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import cv2
 import numpy as np
+import threading
+
+class ImageThread(object):
+    def __init__(self,interval=1):
+	self.interval=interval
+	thread = threading.Thread(target=self.run, args=())
+	thread.daemon = True
+	self.camera = PiCamera()
+	thread.start()
+
+    def run(self):
+	while True:
+            rawCapture=PiRGBArray(self.camera)
+	    time.sleep(0.1)
+            self.camera.capture(rawCapture,format='bgr')
+            image=rawCapture.array
+            edges = cv2.Canny(image,0,100,3)
+            cv2.imshow("Image",edges)
+            cv2.waitKey(1)
+
 
 controler = SixAxis(dead_zone = 0.0, hot_zone = 0.00, connect=True)
 exit = False
@@ -16,21 +36,13 @@ prevx = 0
 prevy = 0
 controler.register_button_handler(handler, SixAxis.button_circle)
 controler.register_button_handler(handler_exit, SixAxis.button_ps)
-camera = PiCamera()
-
+viewer = ImageThread()
 c = cyclopzkeys()
 current_milli_time = lambda: int(round(time.time()*10))
 last_time = current_milli_time()
 
 while controler.is_connected():
     #controler.handle_event()
-    rawCapture=PiRGBArray(camera)
-    time.sleep(0.1)
-    camera.capture(rawCapture,format='bgr')
-    image=rawCapture.array
-    edges = cv2.Canny(image,0,100,3)
-    cv2.imshow("Image",edges)
-    cv2.waitKey(1)
 
     x = controler.axes[0].corrected_value()
     y = controler.axes[1].corrected_value()
